@@ -28,7 +28,6 @@ namespace MonsterTradingCardsGame
             bool inheaders = true;
             _Client = tcpClient;
             List<HttpHeader> headers = new List<HttpHeader>();
-            Payload = new Hashtable();
 
             for (int i = 0; i < lines.Length; i++)
             {
@@ -48,9 +47,8 @@ namespace MonsterTradingCardsGame
                 }
                 else
                 {
-                    // generate hash table
                     // lines[i]: {"Username":"kienboec", "Password":"daniel"}
-                    AddToPayload(lines[i]);
+                    Data = lines[i];
                     //Payload += (lines[i] + "\r\n");
                 }
 
@@ -84,9 +82,7 @@ namespace MonsterTradingCardsGame
             get; private set;
         }
 
-
-        /// <summary>Gets the HTTP payload.</summary>
-        public Hashtable Payload
+        public string Data
         {
             get; private set;
         }
@@ -128,26 +124,6 @@ namespace MonsterTradingCardsGame
 
             _Client.GetStream().Close();                                        // shut down the connection
             //_Client.Dispose();
-        }
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // private methods                                                                                          //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        private void AddToPayload(string line)
-        {
-            // line: {"Username":"kienboec", "Password":"daniel"}
-            line = line.Replace("\"", "");
-            line = line.Replace("{", "");
-            line = line.Replace("}", "");
-            line = line.Replace(" ", "");
-
-            string[] keyValuePairs = line.Split(",");
-            foreach (string pair in keyValuePairs)
-            {
-                string[] splitted = pair.Split(":");
-                Payload.Add(splitted[0], splitted[1]);
-            }
         }
 
     }

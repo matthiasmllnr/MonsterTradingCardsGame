@@ -2,13 +2,12 @@
 using System.Data;
 using MonsterTradingCardsGame;
 using Npgsql;
-
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// MAIN
 
-var cs = "Host=localhost;Username=postgres;Password=admin;Database=monsterTradingCards";
-Database db = new Database(cs);
 
 HttpServer server = new HttpServer();
 
@@ -18,15 +17,6 @@ server.Run();
 
 void _Svr_Incoming(object sender, HttpServerEventArgs e)
 {
-    // Prints Payload
-    Console.WriteLine("-----Payload------");
-    foreach (string key in e.Payload.Keys)
-    {
-        Console.WriteLine(key + " : " + e.Payload[key]);
-    }
-    Console.WriteLine("Path: " + e.Path);
-    Console.WriteLine("------------------");
-    Console.WriteLine();
 
     try
     {
@@ -37,7 +27,8 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                 switch (e.Method)
                 {
                     case "POST":
-                        db.CreateUser(e.Payload);
+                        Console.WriteLine("before create");
+                        server.UserManager.CreateUser(e.Data);
                         e.Reply(200, "Created User.");
                         break;
                 }
@@ -49,10 +40,11 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                 switch (e.Method)
                 {
                     case "POST":
-                        string token = db.LoginUser(e.Payload);
+                        string token = server.UserManager.LoginUser(e.Data);
                         if (token != "-")
                         {
                             e.Reply(200, $"User successfully logged in. \nToken: {token}");
+                            server.UserManager.PrintUsers();
                         } else
                         {
                             e.Reply(409, "Invalid username or password!");
@@ -62,6 +54,51 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                 }
 
                 break;
+
+            case "/packages":
+
+                switch (e.Method)
+                {
+                    case "POST":
+                        List<HttpHeader> h = e.Headers.ToList();
+                        Console.WriteLine("Token: " + h[4].Value);
+                        bool authorized = server.UserManager.IsAuthorized(h[4].Value, true);
+                        if (authorized)
+                        {
+                            bool success = server.CardPackageManager.CreateCardPackage(e.Data);
+                            if (success)
+                            {
+                                e.Reply(200, "Package successfully created.");
+                            }
+                            else
+                            {
+                                e.Reply(409, "Package creation failed.");
+                            }
+                        } else
+                        {
+                            e.Reply(409, "Authentication failed! User not authorized or logged in.");
+                        }
+                        break;
+                }
+
+                break;
+
+            case "/transactions/packages":
+
+                break;
+
+            case "/cards":
+
+                break;
+
+            case "/deck":
+
+                break;
+
+            case "/deck?format=plain":
+
+                break;
+
         }
     }
     catch (NpgsqlException ex)

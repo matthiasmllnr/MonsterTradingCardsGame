@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Data;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace MonsterTradingCardsGame
 {
@@ -14,23 +16,31 @@ namespace MonsterTradingCardsGame
         // private members                                                                                          //
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        private TcpListener _Listener;
+        private TcpListener? _Listener;
+        public UserManagement UserManager;
+        public CardPackageManagement CardPackageManager;
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // public events                                                                                            //
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///
-        public event IncomingEventHandler Incoming;
+        public event IncomingEventHandler? Incoming;
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // public methods                                                                                           //
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        public HttpServer()
+        {
+            UserManager = new UserManagement();
+            CardPackageManager = new CardPackageManagement();
+        }
+
         /// <summary>Runs the server.</summary>
         /// <remarks>Probably won't stay this way forever.</remarks>
         public void Run()
         {
-            _Listener = new TcpListener(IPAddress.Parse("127.0.0.1"), 12000);
+            _Listener = new TcpListener(IPAddress.Parse("127.0.0.1"), 10001); // p:12000
             _Listener.Start();
 
             byte[] buf = new byte[256];
