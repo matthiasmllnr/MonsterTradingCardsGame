@@ -183,6 +183,37 @@ namespace MonsterTradingCardsGame
             return output;
         }
 
+        public bool ConfigureDeck(string data)
+		{
+            List<int>? cardIds = JsonConvert.DeserializeObject<List<int>>(data);
+			bool cardsOwnedByUser = CheckCardsOwned(cardIds);
+			if(cardIds != null && cardIds.Count == 4 && cardsOwnedByUser)
+			{
+				Database db = new Database();
+				NpgsqlCommand cmd = db.conn.CreateCommand();
+				cmd.CommandText = $"UPDATE user_decks SET card1_id = '{cardIds[0]}', card2_id = '{cardIds[1]}', card3_id = '{cardIds[2]}', card4_id = '{cardIds[3]}' WHERE user_id = '{Id}'";
+				cmd.ExecuteNonQuery();
+				cmd.Dispose();
+				db.CloseConnection();
+				LoadDeckFromDB();
+				return true;
+            }
+			return false;
+		}
+
+		private bool CheckCardsOwned(List<int>? cardIds)
+		{
+			if(cardIds != null)
+			{
+                foreach (int id in cardIds)
+                {
+                    Card? c = GetCardFromStackByID(id);
+                    if (c == null) return false;
+                }
+            }
+			return true;
+		}
+
     }
 }
 

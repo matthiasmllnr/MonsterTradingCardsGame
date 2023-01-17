@@ -20,6 +20,9 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
 
     try
     {
+        List<HttpHeader> h;
+        User? user;
+        string token;
         switch (e.Path)
         {
             case "/users":
@@ -39,7 +42,7 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                 switch (e.Method)
                 {
                     case "POST":
-                        string token = server.UserManager.LoginUser(e.Data);
+                        token = server.UserManager.LoginUser(e.Data);
                         if (token != "-")
                         {
                             e.Reply(200, $"User successfully logged in. \nSession-Token: {token}");
@@ -59,7 +62,7 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                 switch (e.Method)
                 {
                     case "POST":
-                        List<HttpHeader> h = e.Headers.ToList();
+                        h = e.Headers.ToList();
                         bool authorized = server.UserManager.IsAuthorized(h[4].Value, true);
                         if (authorized)
                         {
@@ -85,10 +88,10 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                 switch (e.Method)
                 {
                     case "POST":
-                        List<HttpHeader> h = e.Headers.ToList();
-                        string token = h[h.Count-2].Value;
+                        h = e.Headers.ToList();
+                        token = h[h.Count-2].Value;
                         Console.WriteLine(token);
-                        User? user = server.UserManager.GetUser(token);
+                        user = server.UserManager.GetUser(token);
                         if(user != null)
                         {
                             string success = server.CardPackageManager.AcquirePackage(user);
@@ -108,9 +111,9 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                 switch (e.Method)
                 {
                     case "GET":
-                        List<HttpHeader> h = e.Headers.ToList();
-                        string token = h[h.Count-1].Value;
-                        User? user = server.UserManager.GetUser(token);
+                        h = e.Headers.ToList();
+                        token = h[h.Count-1].Value;
+                        user = server.UserManager.GetUser(token);
                         if (user != null)
                         {
                             string userStack = user.GetStack();
@@ -126,12 +129,13 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                 break;
 
             case "/deck":
+
                 switch (e.Method)
                 {
                     case "GET":
-                        List<HttpHeader> h = e.Headers.ToList();
-                        string token = h[h.Count - 1].Value;
-                        User? user = server.UserManager.GetUser(token);
+                        h = e.Headers.ToList();
+                        token = h[h.Count - 1].Value;
+                        user = server.UserManager.GetUser(token);
                         if (user != null)
                         {
                             string userDeck = user.GetDeck();
@@ -140,6 +144,29 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                         else
                         {
                             e.Reply(409, "Showing deck failed! User not logged in.");
+                        }
+
+                        break;
+
+                    case "PUT":
+                        h = e.Headers.ToList();
+                        token = h[h.Count - 2].Value;
+                        user = server.UserManager.GetUser(token);
+                        if (user != null)
+                        {
+                            bool success = user.ConfigureDeck(e.Data);
+                            if (success)
+                            {
+                                e.Reply(200, "Successfully configured deck.");
+                            }
+                            else
+                            {
+                                e.Reply(409, "Configuring deck failed! Invalid Input.");
+                            }
+                        }
+                        else
+                        {
+                            e.Reply(409, "Configuring deck failed! User not logged in.");
                         }
 
                         break;
@@ -160,6 +187,10 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
             e.Reply(409, "Username already exists!");
             Console.WriteLine("Unique Constraint got violated");
         }
+    }
+    catch(Exception exp)
+    {
+        e.Reply(409, exp.Message);
     }
 
 
