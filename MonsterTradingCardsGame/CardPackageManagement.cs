@@ -70,6 +70,8 @@ namespace MonsterTradingCardsGame
                 // coins - price
                 user.Coins -= PACKAGE_COST;
 				user.UpdateUser();
+				if (user.deck.Count < 4) user.InitUserDeck();
+
 				return "Package successfully acquired.";
             }
             else

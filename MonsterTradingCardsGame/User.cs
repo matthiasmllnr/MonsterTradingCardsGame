@@ -26,6 +26,7 @@ namespace MonsterTradingCardsGame
 			deck = new List<Card>();
 			GetUserIdFromDB();
 			LoadStackFromDB();
+			LoadDeckFromDB();
         }
 
 		private void GetUserIdFromDB()
@@ -98,9 +99,89 @@ namespace MonsterTradingCardsGame
 			{
 				output += c.GetProperties() + "\n";
 			}
-			output += "------------------------------------------------------";
+			output += "------------------------------------------------------\n";
 			return output;
 		}
+
+        public void InitUserDeck()
+        {
+			Console.WriteLine("in initUserDeck");
+			// get 4 random cards from stack and add to deck
+			Random random = new Random();
+			int randIndex;
+			Card c;
+			for(int i = 0; i < 4; i++)
+			{
+				randIndex = random.Next(stack.Count);
+				c = stack[randIndex];
+				while (deck.Contains(c))
+				{
+                    c = stack[randIndex];
+                }
+				deck.Add(c);
+			}
+			Console.WriteLine("nach deck adden");
+
+			// save in db
+			Database db = new Database();
+            NpgsqlCommand cmd = db.conn.CreateCommand();
+            cmd.CommandText = $"INSERT INTO user_decks (user_id, card1_id, card2_id, card3_id, card4_id) VALUES ('{Id}', '{deck[0].Id}', '{deck[1].Id}', '{deck[2].Id}', '{deck[3].Id}')";
+			cmd.ExecuteNonQuery();
+			cmd.Dispose();
+			db.CloseConnection();
+			Console.WriteLine("nach db save");
+        }
+
+		private void LoadDeckFromDB()
+		{
+            Database db = new Database();
+            NpgsqlCommand cmd = db.conn.CreateCommand();
+            cmd.CommandText = $"SELECT * FROM user_decks WHERE user_id = '{Id}'";
+			NpgsqlDataReader dr = cmd.ExecuteReader();
+			if (dr.Read())
+			{
+				List<int> cardIds = new List<int>();
+                deck.Clear();
+				cardIds.Add((int)dr[1]);
+				cardIds.Add((int)dr[2]);
+				cardIds.Add((int)dr[3]);
+				cardIds.Add((int)dr[4]);
+				Card? c;
+				foreach(int id in cardIds)
+				{
+					c = GetCardFromStackByID(id);
+					if (c != null) deck.Add(c);
+				}
+            }
+
+			dr.Close();
+			cmd.Dispose();
+			db.CloseConnection();
+        }
+
+		public Card? GetCardFromStackByID(int id)
+		{
+			foreach(Card card in stack)
+			{
+				if (card.Id.Equals(id))
+				{
+					return card;
+				}
+			}
+
+			return null;
+		}
+
+		public string GetDeck()
+		{
+            string output = "-----/ " + Username + "s Deck \\-----\n";
+            foreach (Card c in deck)
+            {
+                output += c.GetProperties() + "\n";
+            }
+            output += "------------------------------------------------------\n";
+            return output;
+        }
 
     }
 }

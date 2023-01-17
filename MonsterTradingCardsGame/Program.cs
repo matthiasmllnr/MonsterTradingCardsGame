@@ -27,7 +27,6 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                 switch (e.Method)
                 {
                     case "POST":
-                        Console.WriteLine("before create");
                         server.UserManager.CreateUser(e.Data);
                         e.Reply(200, "Created User.");
                         break;
@@ -43,7 +42,7 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                         string token = server.UserManager.LoginUser(e.Data);
                         if (token != "-")
                         {
-                            e.Reply(200, $"User successfully logged in. \nToken: {token}");
+                            e.Reply(200, $"User successfully logged in. \nSession-Token: {token}");
                             server.UserManager.PrintUsers();
                         } else
                         {
@@ -61,7 +60,6 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                 {
                     case "POST":
                         List<HttpHeader> h = e.Headers.ToList();
-                        Console.WriteLine("Token: " + h[h.Count-1].Value);
                         bool authorized = server.UserManager.IsAuthorized(h[4].Value, true);
                         if (authorized)
                         {
@@ -88,7 +86,8 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                 {
                     case "POST":
                         List<HttpHeader> h = e.Headers.ToList();
-                        string token = h[h.Count-1].Value;
+                        string token = h[h.Count-2].Value;
+                        Console.WriteLine(token);
                         User? user = server.UserManager.GetUser(token);
                         if(user != null)
                         {
@@ -111,7 +110,6 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                     case "GET":
                         List<HttpHeader> h = e.Headers.ToList();
                         string token = h[h.Count-1].Value;
-                        Console.WriteLine("Token: " + token);
                         User? user = server.UserManager.GetUser(token);
                         if (user != null)
                         {
@@ -128,7 +126,24 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                 break;
 
             case "/deck":
+                switch (e.Method)
+                {
+                    case "GET":
+                        List<HttpHeader> h = e.Headers.ToList();
+                        string token = h[h.Count - 1].Value;
+                        User? user = server.UserManager.GetUser(token);
+                        if (user != null)
+                        {
+                            string userDeck = user.GetDeck();
+                            e.Reply(200, userDeck);
+                        }
+                        else
+                        {
+                            e.Reply(409, "Showing deck failed! User not logged in.");
+                        }
 
+                        break;
+                }
                 break;
 
             case "/deck?format=plain":
