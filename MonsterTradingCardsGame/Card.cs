@@ -1,13 +1,16 @@
 ﻿using System;
+using Newtonsoft.Json.Linq;
+using Npgsql;
+
 namespace MonsterTradingCardsGame
 {
 	public class Card
 	{
-		private int Id;
-		private string Type;
-		private string Name;
-		private string Element;
-		private float Damage;
+		public int Id;
+        public string Type;
+        public string Name;
+        public string Element;
+        public float Damage;
 
 		public Card(string type, string name, string element, float damage)
 		{
@@ -15,7 +18,7 @@ namespace MonsterTradingCardsGame
 			Name = name;
 			Element = element;
 			Damage = damage;
-
+			SaveCardInDB();
 		}
 
 		public string GetProperties()
@@ -32,9 +35,17 @@ namespace MonsterTradingCardsGame
 		}
 
 		// TODO
-		private string SaveCardInDB()
+		private void SaveCardInDB()
 		{
-			return "";
+			Database db = new Database();
+
+            NpgsqlCommand cmd = db.conn.CreateCommand();
+            cmd = db.conn.CreateCommand();
+            cmd.CommandText = $"INSERT INTO cards (name, type, element, damage) VALUES ('{Name}', '{Type}', '{Element}', '{Damage}') RETURNING id";
+			object? obj = cmd.ExecuteScalar();
+			if (obj != null) Id = (int)obj;
+			cmd.Dispose();
+            db.CloseConnection();
 		}
 	}
 }
