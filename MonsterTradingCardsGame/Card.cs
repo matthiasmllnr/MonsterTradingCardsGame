@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Npgsql;
 
@@ -12,7 +13,8 @@ namespace MonsterTradingCardsGame
         public string Element;
         public float Damage;
 
-		public Card(string type, string name, string element, float damage)
+		[JsonConstructor]
+		public Card(string name, string type, string element, float damage)
 		{
 			Type = type;
 			Name = name;
@@ -21,20 +23,28 @@ namespace MonsterTradingCardsGame
 			SaveCardInDB();
 		}
 
-		public string GetProperties()
+        public Card(int id, string name, string type, string element, float damage)
+        {
+			Id = id;
+            Type = type;
+            Name = name;
+            Element = element;
+            Damage = damage;
+        }
+
+        public string GetProperties()
 		{
 			string s = "";
 
-			s += "Id: " + Id + " ";
-			s += "Type: " + Type + " ";
-			s += "Name: " + Name + " ";
-			s += "Element: " + Element + " ";
-			s += "Damage: " + Damage + " ";
+			s += "Id: " + Id + " | ";
+			s += "Type: " + Type + " | ";
+			s += "Name: " + Name + " | ";
+			s += "Element: " + Element + " | ";
+			s += "Damage: " + Damage;
 
 			return s;
 		}
 
-		// TODO
 		private void SaveCardInDB()
 		{
 			Database db = new Database();

@@ -61,7 +61,7 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                 {
                     case "POST":
                         List<HttpHeader> h = e.Headers.ToList();
-                        Console.WriteLine("Token: " + h[4].Value);
+                        Console.WriteLine("Token: " + h[h.Count-1].Value);
                         bool authorized = server.UserManager.IsAuthorized(h[4].Value, true);
                         if (authorized)
                         {
@@ -84,11 +84,47 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                 break;
 
             case "/transactions/packages":
+                switch (e.Method)
+                {
+                    case "POST":
+                        List<HttpHeader> h = e.Headers.ToList();
+                        string token = h[h.Count-1].Value;
+                        User? user = server.UserManager.GetUser(token);
+                        if(user != null)
+                        {
+                            string success = server.CardPackageManager.AcquirePackage(user);
+                            e.Reply(200, "Acquire package: " + success);
+                        }
+                        else
+                        {
+                            e.Reply(409, "Acquiring package failed! User not logged in.");
+                        }
+
+                        break;
+                }
 
                 break;
 
             case "/cards":
+                switch (e.Method)
+                {
+                    case "GET":
+                        List<HttpHeader> h = e.Headers.ToList();
+                        string token = h[h.Count-1].Value;
+                        Console.WriteLine("Token: " + token);
+                        User? user = server.UserManager.GetUser(token);
+                        if (user != null)
+                        {
+                            string userStack = user.GetStack();
+                            e.Reply(200, userStack);
+                        }
+                        else
+                        {
+                            e.Reply(409, "Showing all acquired cards failed! User not logged in.");
+                        }
 
+                        break;
+                }
                 break;
 
             case "/deck":

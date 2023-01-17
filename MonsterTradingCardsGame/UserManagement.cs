@@ -120,6 +120,18 @@ namespace MonsterTradingCardsGame
             return authorized;
         }
 
+        public User? GetUser(string token)
+        {
+            foreach(User u in users)
+            {
+                if (u.AuthenticationToken.Equals(token))
+                {
+                    return u;
+                }
+            }
+            return null;
+        }
+
     }
 }
 

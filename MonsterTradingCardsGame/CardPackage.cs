@@ -2,6 +2,7 @@
 using Npgsql;
 using static System.Net.Mime.MediaTypeNames;
 using System.Xml.Linq;
+using Newtonsoft.Json;
 
 namespace MonsterTradingCardsGame
 {
@@ -10,6 +11,7 @@ namespace MonsterTradingCardsGame
 		public int Id;
 		public List<Card> Cards;
 
+        [JsonConstructor]
 		public CardPackage(List<Card> listCards)
 		{
             Cards = new List<Card>();
@@ -20,7 +22,18 @@ namespace MonsterTradingCardsGame
 			SaveInDB();
 		}
 
-		public void SaveInDB()
+        // Constructor without Save in DB
+        public CardPackage(int id, List<Card> listCards)
+        {
+            Id = id;
+            Cards = new List<Card>();
+            foreach (Card c in listCards)
+            {
+                Cards.Add(c);
+            }
+        }
+
+        public void SaveInDB()
 		{
 			Database db = new Database();
 
