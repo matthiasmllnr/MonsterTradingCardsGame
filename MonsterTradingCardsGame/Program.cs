@@ -23,6 +23,9 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
         List<HttpHeader> h;
         User? user;
         string token;
+
+        if (e.Path.Contains("/users/")) e.Path = "/users";
+
         switch (e.Path)
         {
             case "/users":
@@ -30,8 +33,39 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                 switch (e.Method)
                 {
                     case "POST":
+                        token = server.UserManager.LoginUser(e.Data);
                         server.UserManager.CreateUser(e.Data);
                         e.Reply(200, "Created User.");
+                        break;
+
+                    case "GET":
+                        h = e.Headers.ToList();
+                        token = h[h.Count - 1].Value;
+                        user = server.UserManager.GetUser(token);
+                        if (user != null)
+                        {
+                            string userProfile = user.GetProfile();
+                            e.Reply(200, userProfile);
+                        }
+                        else
+                        {
+                            e.Reply(409, "Showing profile failed! User not logged in.");
+                        }
+                        break;
+
+                    case "PUT":
+                        h = e.Headers.ToList();
+                        token = h[h.Count - 2].Value;
+                        user = server.UserManager.GetUser(token);
+                        if (user != null)
+                        {
+                            user.EditProfile(e.Data);
+                            e.Reply(200, "Profile edited.");
+                        }
+                        else
+                        {
+                            e.Reply(409, "Editing profile failed! User not logged in.");
+                        }
                         break;
                 }
 
@@ -90,7 +124,6 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                     case "POST":
                         h = e.Headers.ToList();
                         token = h[h.Count-2].Value;
-                        Console.WriteLine(token);
                         user = server.UserManager.GetUser(token);
                         if(user != null)
                         {

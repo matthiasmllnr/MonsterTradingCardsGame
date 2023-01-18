@@ -10,16 +10,20 @@ namespace MonsterTradingCardsGame
 		public int Id;
 		public string Username;
 		public string Password;
+		public string Bio;
+		public string Image;
 		public string AuthenticationToken;
 		public int Coins;
 		public List<Card> stack; // all cards
-		public List<Card> deck;	// battles deck (4 cards)
+		public List<Card> deck;	// battle deck (4 cards)
 
 
 		public User(string username, string password, string token)
 		{
 			Username = username;
 			Password = password;
+			Bio = "No bio.";	// default bio
+			Image = "\\(^_^)/";	// default image
 			AuthenticationToken = token;
 			Coins = 20;
 			stack = new List<Card>();
@@ -105,22 +109,22 @@ namespace MonsterTradingCardsGame
 
         public void InitUserDeck()
         {
-			Console.WriteLine("in initUserDeck");
 			// get 4 random cards from stack and add to deck
 			Random random = new Random();
 			int randIndex;
 			Card c;
-			for(int i = 0; i < 4; i++)
+            List<int> usedIndexes = new List<int>();
+            for (int i = 0; i < 4; i++)
 			{
 				randIndex = random.Next(stack.Count);
-				c = stack[randIndex];
-				while (deck.Contains(c))
+				while (usedIndexes.Contains(randIndex))
 				{
-                    c = stack[randIndex];
+                    randIndex = random.Next(stack.Count);
                 }
-				deck.Add(c);
+				usedIndexes.Add(randIndex);
+                c = stack[randIndex];
+                deck.Add(c);
 			}
-			Console.WriteLine("nach deck adden");
 
 			// save in db
 			Database db = new Database();
@@ -129,7 +133,6 @@ namespace MonsterTradingCardsGame
 			cmd.ExecuteNonQuery();
 			cmd.Dispose();
 			db.CloseConnection();
-			Console.WriteLine("nach db save");
         }
 
 		private void LoadDeckFromDB()
@@ -214,6 +217,46 @@ namespace MonsterTradingCardsGame
 			return true;
 		}
 
-    }
+		public string GetProfile()
+		{
+			string userProfile = "";
+
+			userProfile += "------------------------------\n";
+			userProfile += "Username: " + Username + "\n";
+			userProfile += "Bio:      " + Bio + "\n";
+			userProfile += "Image:    " + Image + "\n";
+			userProfile += "Coins:    " + Coins + "\n";
+            userProfile += "------------------------------\n\n";
+
+            return userProfile;
+		}
+
+		public void EditProfile(string data)
+		{
+			ProfileInput? profile = JsonConvert.DeserializeObject<ProfileInput>(data);
+			if(profile != null)
+			{
+				if(profile.Name != null) Username = profile.Name;
+				if(profile.Bio != null) Bio = profile.Bio;
+				if(profile.Image != null) Image = profile.Image;
+			}
+		}
+
+		private class ProfileInput
+		{
+			public string Name;
+			public string Bio;
+			public string Image;
+
+			[JsonConstructor]
+			ProfileInput(string name, string bio, string image)
+			{
+				Name = name;
+				Bio = bio;
+				Image = image;
+			}
+		}
+
+	}
 }
 

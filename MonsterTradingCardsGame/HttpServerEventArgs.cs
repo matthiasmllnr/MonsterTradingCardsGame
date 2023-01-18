@@ -72,7 +72,7 @@ namespace MonsterTradingCardsGame
         /// <summary>Gets the URL path.</summary>
         public string Path
         {
-            get; private set;
+            get; set;
         }
 
 

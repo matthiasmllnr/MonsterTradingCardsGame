@@ -33,7 +33,7 @@ namespace MonsterTradingCardsGame
 				Database db = new Database();
 
                 NpgsqlCommand cmd = db.conn.CreateCommand();
-                cmd.CommandText = $"INSERT INTO users (name, password, token) VALUES ('{tmpUser.Username}', '{tmpUser.Password}', '-')";
+                cmd.CommandText = $"INSERT INTO users (name, password, token, coins, bio, image) VALUES ('{tmpUser.Username}', '{tmpUser.Password}', '-', '{tmpUser.Coins}', '{tmpUser.Bio}', '{tmpUser.Image}')";
 				cmd.ExecuteNonQuery();
                 cmd.Dispose();
 
