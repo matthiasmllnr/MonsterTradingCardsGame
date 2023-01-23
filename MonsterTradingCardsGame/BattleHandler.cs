@@ -40,7 +40,7 @@ namespace MonsterTradingCardsGame
                         battleResult += $"----------[ Battle Result ]----------\n\n";
                         battleResult += $"Winner: {User1.Username}\n";
                         battleResult += $"Loser: {User2.Username}\n";
-                        battleResult += "\n--------------------------------------\n";
+                        battleResult += "\n--------------------------------------\n\n";
                         break;
                     }
                     else if (User1.deck.Count == 0)
@@ -54,7 +54,7 @@ namespace MonsterTradingCardsGame
                         battleResult += $"----------[ Battle Result ]----------\n\n";
                         battleResult += $"Winner: {User2.Username}\n";
                         battleResult += $"Loser: {User1.Username}\n";
-                        battleResult += "\n--------------------------------------\n";
+                        battleResult += "\n--------------------------------------\n\n";
                         break;
                     }
                 }
@@ -66,6 +66,10 @@ namespace MonsterTradingCardsGame
                 // update database
                 User1.UpdateUser();
                 User2.UpdateUser();
+
+                // add battle log
+                User1.LastBattleLog = battleResult;
+                User2.LastBattleLog = battleResult;
             }
 
 			return battleResult;

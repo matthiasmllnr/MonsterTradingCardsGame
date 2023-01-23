@@ -256,6 +256,19 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                         }
 
                         break;
+
+                    case "GET":
+
+                        if (user != null)
+                        {
+                            e.Reply(200, user.LastBattleLog);
+                        }
+                        else
+                        {
+                            e.Reply(409, "Can't show last battle log! User not logged in.");
+                        }
+
+                        break;
                 }
 
                 break;

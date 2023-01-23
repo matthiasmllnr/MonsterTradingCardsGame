@@ -17,6 +17,7 @@ namespace MonsterTradingCardsGame
 		public int Elo;
 		public int Wins;
 		public int Losses;
+		public string LastBattleLog;
 		public List<Card> stack; // all cards
 		public List<Card> deck;	// battle deck (4 cards)
 
@@ -32,6 +33,7 @@ namespace MonsterTradingCardsGame
 			Elo = elo;
 			Wins = wins;
 			Losses = losses;
+			LastBattleLog = "No recents battles.";
 			stack = new List<Card>();
 			deck = new List<Card>();
 			GetUserIdFromDB();
