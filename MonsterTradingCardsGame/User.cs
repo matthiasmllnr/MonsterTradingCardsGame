@@ -149,7 +149,7 @@ namespace MonsterTradingCardsGame
 			db.CloseConnection();
         }
 
-		private void LoadDeckFromDB()
+		public void LoadDeckFromDB()
 		{
             Database db = new Database();
             NpgsqlCommand cmd = db.conn.CreateCommand();
@@ -285,6 +285,16 @@ namespace MonsterTradingCardsGame
 				Bio = bio;
 				Image = image;
 			}
+		}
+
+		// selects a random card from the users deck and removes it
+		public Card GetRandomCardFromDeck()
+		{
+			Random random = new Random();
+			int randomIndex = random.Next(deck.Count);
+			Card c = deck[randomIndex];
+			deck.RemoveAt(randomIndex);
+			return c;
 		}
 
 	}

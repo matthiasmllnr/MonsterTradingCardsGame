@@ -232,6 +232,34 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
 
                 break;
 
+            case "/battles":
+
+                switch (e.Method)
+                {
+                    case "POST":
+
+                        if (user != null)
+                        {
+                            server.Battle.AddPlayer(user);
+                            if (server.Battle.EnoughPlayers())
+                            {
+                                string battleResult = server.Battle.StartBattle();
+                                e.Reply(200, battleResult);
+                            } else
+                            {
+                                e.Reply(200, " In Queue: Waiting for opponent.");
+                            }
+                        }
+                        else
+                        {
+                            e.Reply(409, "Can't queue for battle! User not logged in.");
+                        }
+
+                        break;
+                }
+
+                break;
+
         }
     }
     catch (NpgsqlException ex)

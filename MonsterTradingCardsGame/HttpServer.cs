@@ -19,6 +19,7 @@ namespace MonsterTradingCardsGame
         private TcpListener? _Listener;
         public UserManagement UserManager;
         public CardPackageManagement CardPackageManager;
+        public BattleHandler Battle;
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // public events                                                                                            //
@@ -34,6 +35,7 @@ namespace MonsterTradingCardsGame
         {
             UserManager = new UserManagement();
             CardPackageManager = new CardPackageManagement();
+            Battle = new BattleHandler();
         }
 
         /// <summary>Runs the server.</summary>

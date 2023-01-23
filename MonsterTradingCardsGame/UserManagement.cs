@@ -143,7 +143,7 @@ namespace MonsterTradingCardsGame
             scoreboard += "| Username" + string.Concat(System.Linq.Enumerable.Repeat(" ", usernameLength - 10));
             scoreboard += "| Elo" + string.Concat(System.Linq.Enumerable.Repeat(" ", remainingLength - 5));
             scoreboard += "| Wins" + string.Concat(System.Linq.Enumerable.Repeat(" ", remainingLength - 6));
-            scoreboard += "| Losses" + string.Concat(System.Linq.Enumerable.Repeat(" ", remainingLength - 8));
+            scoreboard += "| Losses" + string.Concat(System.Linq.Enumerable.Repeat(" ", remainingLength - 9));
             scoreboard += "|\n";
             scoreboard += string.Concat(System.Linq.Enumerable.Repeat("-", length)) + "\n";
 
@@ -153,7 +153,7 @@ namespace MonsterTradingCardsGame
                 temp = "| " + u.Username + string.Concat(System.Linq.Enumerable.Repeat(" ", usernameLength - u.Username.Length - 2));
                 temp += "| " + u.Elo + string.Concat(System.Linq.Enumerable.Repeat(" ", remainingLength - u.Elo.ToString().Length - 2));
                 temp += "| " + u.Wins + string.Concat(System.Linq.Enumerable.Repeat(" ", remainingLength - u.Wins.ToString().Length - 2));
-                temp += "| " + u.Losses + string.Concat(System.Linq.Enumerable.Repeat(" ", remainingLength - u.Losses.ToString().Length - 2));
+                temp += "| " + u.Losses + string.Concat(System.Linq.Enumerable.Repeat(" ", remainingLength - u.Losses.ToString().Length - 3));
                 temp += "|\n";
                 scoreboard += temp;
             }
