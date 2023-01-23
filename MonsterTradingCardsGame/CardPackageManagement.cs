@@ -13,15 +13,6 @@ namespace MonsterTradingCardsGame
 		{
 			AllCardPackages = new Dictionary<int, CardPackage>();
 			LoadAllCardPackagesDB();
-			foreach(CardPackage cp in AllCardPackages.Values)
-			{
-				Console.WriteLine("----CardPackages in AllCardPackages----");
-				foreach(Card c in cp.Cards)
-				{
-					Console.WriteLine(c.GetProperties());
-				}
-				Console.WriteLine("-------------------");
-			}
 		}
 
 		public bool CreateCardPackage(string data)

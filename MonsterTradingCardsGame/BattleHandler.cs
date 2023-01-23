@@ -25,7 +25,7 @@ namespace MonsterTradingCardsGame
 					Card card_2 = User2.GetRandomCardFromDeck();
 
 					// play round
-					battleResult += $"----------[ ROUND {i} ]----------\n\n";
+					battleResult += $"----------[ ROUND {i + 1} ]----------\n\n";
 					battleResult += PlayRound(card_1, card_2);
 					battleResult += "\n";
 					

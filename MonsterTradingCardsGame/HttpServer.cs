@@ -64,11 +64,6 @@ namespace MonsterTradingCardsGame
                     data += Encoding.ASCII.GetString(buf, 0, n);
                 }
 
-                Console.WriteLine("--------Data--------");
-                Console.WriteLine(data);                                        // write decoded data to console
-                Console.WriteLine("--------------------");
-                Console.WriteLine();
-
                 Incoming?.Invoke(this, new HttpServerEventArgs(data, client));
 
             }
