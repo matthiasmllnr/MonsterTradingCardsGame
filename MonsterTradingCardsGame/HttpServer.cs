@@ -71,6 +71,21 @@ namespace MonsterTradingCardsGame
 
             }
         }
+
+        public string GetAuthToken(List<HttpHeader> headers)
+        {
+            string token = "-";
+
+            foreach(HttpHeader h in headers)
+            {
+                if (h.Name.Equals("Authorization"))
+                {
+                    token = h.Value;
+                }
+            }
+
+            return token;
+        }
     }
 }
 

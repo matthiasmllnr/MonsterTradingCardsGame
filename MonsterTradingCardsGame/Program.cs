@@ -26,6 +26,10 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
 
         if (e.Path.StartsWith("/users/")) e.Path = "/users";
 
+        h = e.Headers.ToList();
+        token = server.GetAuthToken(h);
+        user = server.UserManager.GetUser(token);
+
         switch (e.Path)
         {
             case "/users":
@@ -38,9 +42,6 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                         break;
 
                     case "GET":
-                        h = e.Headers.ToList();
-                        token = h[h.Count - 1].Value;
-                        user = server.UserManager.GetUser(token);
                         if (user != null)
                         {
                             string userProfile = user.GetProfile();
@@ -53,9 +54,6 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                         break;
 
                     case "PUT":
-                        h = e.Headers.ToList();
-                        token = h[h.Count - 2].Value;
-                        user = server.UserManager.GetUser(token);
                         if (user != null)
                         {
                             user.EditProfile(e.Data);
@@ -95,8 +93,7 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                 switch (e.Method)
                 {
                     case "POST":
-                        h = e.Headers.ToList();
-                        bool authorized = server.UserManager.IsAuthorized(h[4].Value, true);
+                        bool authorized = server.UserManager.IsAuthorized(token, true);
                         if (authorized)
                         {
                             bool success = server.CardPackageManager.CreateCardPackage(e.Data);
@@ -121,9 +118,6 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                 switch (e.Method)
                 {
                     case "POST":
-                        h = e.Headers.ToList();
-                        token = h[h.Count-2].Value;
-                        user = server.UserManager.GetUser(token);
                         if(user != null)
                         {
                             string success = server.CardPackageManager.AcquirePackage(user);
@@ -143,9 +137,6 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                 switch (e.Method)
                 {
                     case "GET":
-                        h = e.Headers.ToList();
-                        token = h[h.Count-1].Value;
-                        user = server.UserManager.GetUser(token);
                         if (user != null)
                         {
                             string userStack = user.GetStack();
@@ -165,9 +156,6 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                 switch (e.Method)
                 {
                     case "GET":
-                        h = e.Headers.ToList();
-                        token = h[h.Count - 1].Value;
-                        user = server.UserManager.GetUser(token);
                         if (user != null)
                         {
                             string userDeck = user.GetDeck();
@@ -181,9 +169,6 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                         break;
 
                     case "PUT":
-                        h = e.Headers.ToList();
-                        token = h[h.Count - 2].Value;
-                        user = server.UserManager.GetUser(token);
                         if (user != null)
                         {
                             bool success = user.ConfigureDeck(e.Data);
@@ -210,9 +195,7 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                 switch (e.Method)
                 {
                     case "GET":
-                        h = e.Headers.ToList();
-                        token = h[h.Count - 1].Value;
-                        user = server.UserManager.GetUser(token);
+                        
                         if (user != null)
                         {
                             string stats = user.GetStats();
