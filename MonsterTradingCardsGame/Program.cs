@@ -24,7 +24,7 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
         User? user;
         string token;
 
-        if (e.Path.Contains("/users/")) e.Path = "/users";
+        if (e.Path.StartsWith("/users/")) e.Path = "/users";
 
         switch (e.Path)
         {
@@ -33,7 +33,6 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                 switch (e.Method)
                 {
                     case "POST":
-                        token = server.UserManager.LoginUser(e.Data);
                         server.UserManager.CreateUser(e.Data);
                         e.Reply(200, "Created User.");
                         break;
@@ -154,7 +153,7 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                         }
                         else
                         {
-                            e.Reply(409, "Showing all acquired cards failed! User not logged in.");
+                            e.Reply(409, "Showing all acquired cards failed! User not logged in.\\n");
                         }
 
                         break;
@@ -206,7 +205,26 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                 }
                 break;
 
-            case "/deck?format=plain":
+            case "/stats":
+
+                switch (e.Method)
+                {
+                    case "GET":
+                        h = e.Headers.ToList();
+                        token = h[h.Count - 1].Value;
+                        user = server.UserManager.GetUser(token);
+                        if (user != null)
+                        {
+                            string stats = user.GetStats();
+                            e.Reply(200, stats);
+                        }
+                        else
+                        {
+                            e.Reply(409, "Showing stats failed! User not logged in.");
+                        }
+
+                        break;
+                }
 
                 break;
 

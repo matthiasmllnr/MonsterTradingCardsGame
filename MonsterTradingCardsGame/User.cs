@@ -14,18 +14,24 @@ namespace MonsterTradingCardsGame
 		public string Image;
 		public string AuthenticationToken;
 		public int Coins;
+		public int Elo;
+		public int Wins;
+		public int Losses;
 		public List<Card> stack; // all cards
 		public List<Card> deck;	// battle deck (4 cards)
 
-
-		public User(string username, string password, string token)
+		// Default values are set in db when creating a new user
+		public User(string username, string password, string token, int coins, string bio, string image, int elo, int wins, int losses)
 		{
 			Username = username;
 			Password = password;
-			Bio = "No bio.";	// default bio
-			Image = "\\(^_^)/";	// default image
+			Bio = bio;  
+			Image = image;	
 			AuthenticationToken = token;
-			Coins = 20;
+			Coins = coins;
+			Elo = elo;
+			Wins = wins;
+			Losses = losses;
 			stack = new List<Card>();
 			deck = new List<Card>();
 			GetUserIdFromDB();
@@ -61,7 +67,15 @@ namespace MonsterTradingCardsGame
 		{
 			Database db = new Database();
 			NpgsqlCommand cmd = db.conn.CreateCommand();
-			cmd.CommandText = $"UPDATE users SET name = '{Username}', password = '{Password}', token = '{AuthenticationToken}', coins = '{Coins}' WHERE id = '{Id}'";
+			cmd.CommandText = $"UPDATE users SET " +
+							  $"name = '{Username}', " +
+							  $"password = '{Password}', " +
+							  $"token = '{AuthenticationToken}', " +
+							  $"coins = '{Coins}', " +
+							  $"elo = '{Elo}', " +
+							  $"wins = '{Wins}', " +
+							  $"losses = '{Losses}' " +
+							  $"WHERE id = '{Id}'";
 			cmd.ExecuteNonQuery();
 			db.CloseConnection();
 		}
@@ -226,6 +240,9 @@ namespace MonsterTradingCardsGame
 			userProfile += "Bio:      " + Bio + "\n";
 			userProfile += "Image:    " + Image + "\n";
 			userProfile += "Coins:    " + Coins + "\n";
+			userProfile += "Elo:    " + Elo + "\n";
+			userProfile += "Wins:    " + Wins + "\n";
+			userProfile += "Losses:    " + Losses + "\n";
             userProfile += "------------------------------\n\n";
 
             return userProfile;
@@ -242,6 +259,19 @@ namespace MonsterTradingCardsGame
 			}
 		}
 
+		public string GetStats()
+		{
+			string stats = "";
+            stats += "------------------------------\n";
+            stats += "Elo: " + Elo + "\n";
+            stats += "Wins: " + Wins + "\n";
+            stats += "Losses: " + Losses + "\n";
+            stats += "------------------------------\n\n";
+
+            return stats;
+        }
+
+		// only temporary used when using JsonConvert
 		private class ProfileInput
 		{
 			public string Name;

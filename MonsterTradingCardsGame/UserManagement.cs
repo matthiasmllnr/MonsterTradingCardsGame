@@ -10,19 +10,16 @@ namespace MonsterTradingCardsGame
 	public class UserManagement
 	{
 		private List<User> users;
-		private int UserCount;
 
 		public UserManagement()
 		{
 			users = new List<User>();
-			UserCount = 0;
 		}
 
-		public void AddUser(string username, string password, string token)
+		public void AddUser(string username, string password, string token, int coins, string bio, string image, int elo, int wins, int losses)
 		{
-			User user = new User(username, password, token);
+			User user = new User(username, password, token, coins, bio, image, elo, wins, losses);
 			users.Add(user);
-			UserCount++;
 		}
 
 		public void CreateUser(string data)
@@ -33,7 +30,7 @@ namespace MonsterTradingCardsGame
 				Database db = new Database();
 
                 NpgsqlCommand cmd = db.conn.CreateCommand();
-                cmd.CommandText = $"INSERT INTO users (name, password, token, coins, bio, image) VALUES ('{tmpUser.Username}', '{tmpUser.Password}', '-', '{tmpUser.Coins}', '{tmpUser.Bio}', '{tmpUser.Image}')";
+                cmd.CommandText = $"INSERT INTO users (name, password, token) VALUES ('{tmpUser.Username}', '{tmpUser.Password}', '-')";
 				cmd.ExecuteNonQuery();
                 cmd.Dispose();
 
@@ -43,37 +40,36 @@ namespace MonsterTradingCardsGame
 
         public string LoginUser(string data)
         {
+            string token = "-";
             User? tmpUser = JsonConvert.DeserializeObject<User>(data);
             if (tmpUser != null)
             {
                 Database db = new Database();
-
                 NpgsqlCommand cmd = db.conn.CreateCommand();
                 cmd.CommandText = $"SELECT * FROM users WHERE name = '{tmpUser.Username}' AND password = '{tmpUser.Password}'";
 
                 IDataReader dr = cmd.ExecuteReader();
                 bool valid = dr.Read();
-                dr.Close();
-                cmd.Dispose();
-
                 if (valid)
                 {
                     // user and password exist and are correct
-                    string token = GenerateSecurityToken();
-
-                    cmd = db.conn.CreateCommand();
+                    token = GenerateSecurityToken();
+                    AddUser(tmpUser.Username, tmpUser.Password, token,
+                        (int)dr[4],     // coins
+                        (string)dr[5],  // bio
+                        (string)dr[6],  // image
+                        (int)dr[7],     // elo
+                        (int)dr[8],     // wins
+                        (int)dr[9]      // losses
+                    );
+                    dr.Close();
                     cmd.CommandText = $"UPDATE users SET token = '{token}' WHERE name = '{tmpUser.Username}' AND password = '{tmpUser.Password}'";
                     cmd.ExecuteNonQuery();
-                    cmd.Dispose();
-                    db.CloseConnection();
-
-                    AddUser(tmpUser.Username, tmpUser.Password, token);
-
-                    return token;
                 }
+                cmd.Dispose();
                 db.CloseConnection();
             }
-            return "-";
+            return token;
         }
 
         private string GenerateSecurityToken()
