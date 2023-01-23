@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Data;
+using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Npgsql;
@@ -126,6 +127,42 @@ namespace MonsterTradingCardsGame
                 }
             }
             return null;
+        }
+
+        public string GetScoreboard()
+        {
+            string scoreboard = "";
+            string temp;
+            int length = 150;
+            int usernameLength = 51;
+            int remainingLength = 33;
+            //Username | Elo | Wins | Losses
+
+            // Scoreboard Header
+            scoreboard += string.Concat(System.Linq.Enumerable.Repeat("-", length)) + "\n";
+            scoreboard += "| Username" + string.Concat(System.Linq.Enumerable.Repeat(" ", usernameLength - 10));
+            scoreboard += "| Elo" + string.Concat(System.Linq.Enumerable.Repeat(" ", remainingLength - 5));
+            scoreboard += "| Wins" + string.Concat(System.Linq.Enumerable.Repeat(" ", remainingLength - 6));
+            scoreboard += "| Losses" + string.Concat(System.Linq.Enumerable.Repeat(" ", remainingLength - 8));
+            scoreboard += "|\n";
+            scoreboard += string.Concat(System.Linq.Enumerable.Repeat("-", length)) + "\n";
+
+            // Scoreboard Body
+            foreach (User u in users)
+            {
+                temp = "| " + u.Username + string.Concat(System.Linq.Enumerable.Repeat(" ", usernameLength - u.Username.Length - 2));
+                temp += "| " + u.Elo + string.Concat(System.Linq.Enumerable.Repeat(" ", remainingLength - u.Elo.ToString().Length - 2));
+                temp += "| " + u.Wins + string.Concat(System.Linq.Enumerable.Repeat(" ", remainingLength - u.Wins.ToString().Length - 2));
+                temp += "| " + u.Losses + string.Concat(System.Linq.Enumerable.Repeat(" ", remainingLength - u.Losses.ToString().Length - 2));
+                temp += "|\n";
+                scoreboard += temp;
+            }
+
+            // Scoreboard Footer
+            scoreboard += string.Concat(System.Linq.Enumerable.Repeat("-", length)) + "\n";
+
+
+            return scoreboard;
         }
 
     }

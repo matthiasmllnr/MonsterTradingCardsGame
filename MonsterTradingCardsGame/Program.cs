@@ -211,6 +211,27 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
 
                 break;
 
+            case "/score":
+
+                switch (e.Method)
+                {
+                    case "GET":
+
+                        if (user != null)
+                        {
+                            string scoreboard = server.UserManager.GetScoreboard();
+                            e.Reply(200, scoreboard);
+                        }
+                        else
+                        {
+                            e.Reply(409, "Showing scoreboard failed! User not logged in.");
+                        }
+
+                        break;
+                }
+
+                break;
+
         }
     }
     catch (NpgsqlException ex)
