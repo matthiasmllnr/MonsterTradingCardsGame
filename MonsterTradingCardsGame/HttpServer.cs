@@ -20,6 +20,7 @@ namespace MonsterTradingCardsGame
         public UserManagement UserManager;
         public CardPackageManagement CardPackageManager;
         public BattleHandler Battle;
+        public TradingDeals TradeHandler;
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // public events                                                                                            //
@@ -36,6 +37,7 @@ namespace MonsterTradingCardsGame
             UserManager = new UserManagement();
             CardPackageManager = new CardPackageManagement();
             Battle = new BattleHandler();
+            TradeHandler = new TradingDeals();
         }
 
         /// <summary>Runs the server.</summary>

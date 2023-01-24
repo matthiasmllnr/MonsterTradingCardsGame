@@ -23,14 +23,17 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
         List<HttpHeader> h;
         User? user;
         string token;
+        string path = e.Path;
+        string offerId;
 
-        if (e.Path.StartsWith("/users/")) e.Path = "/users";
+        if (e.Path.StartsWith("/users/")) path = "/users";
+        if (e.Path.StartsWith("/tradings/")) path = "/tradings";
 
         h = e.Headers.ToList();
         token = server.GetAuthToken(h);
         user = server.UserManager.GetUser(token);
 
-        switch (e.Path)
+        switch (path)
         {
             case "/users":
 
@@ -77,7 +80,6 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                         if (token != "-")
                         {
                             e.Reply(200, $"User successfully logged in. \nSession-Token: {token}");
-                            server.UserManager.PrintUsers();
                         } else
                         {
                             e.Reply(409, "Invalid username or password!");
@@ -273,6 +275,78 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
 
                 break;
 
+            case "/tradings":
+
+                switch (e.Method)
+                {
+                    case "GET":
+
+                        if (user != null)
+                        {
+                            string tradingDeals = server.TradeHandler.GetTradingDeals();
+                            e.Reply(200, tradingDeals);
+                        }
+                        else
+                        {
+                            e.Reply(409, "Showing tradings failed! User not logged in.");
+                        }
+
+                        break;
+
+                    case "POST":
+
+                        // create/trade
+                        offerId = "-";
+                        if (e.Path.Length > path.Length)
+                        {
+                            offerId = e.Path.Substring(path.Length + 1);
+                        }
+
+                        if (user != null)
+                        {
+
+                            if(offerId != "-")
+                            {
+                                // trade
+                                Console.WriteLine(e.Data);
+                                string response = server.TradeHandler.Trade(Int32.Parse(offerId), user, Int32.Parse(e.Data), server.UserManager);
+                                e.Reply(200, response);
+                            } else
+                            {
+                                // create offer
+                                string response = server.TradeHandler.AddOffer(e.Data, user);
+                                e.Reply(200, response);
+                            }
+                        }
+                        else
+                        {
+                            e.Reply(409, "Creating/Trading failed! User not logged in.");
+                        }
+
+                        break;
+
+                    case "DELETE":
+
+                        if (user != null)
+                        {
+                            offerId = "-";
+                            if (e.Path.Length > path.Length)
+                            {
+                                offerId = e.Path.Substring(path.Length + 1);
+                            }
+                            Console.WriteLine(offerId);
+                            string deleteOffer = server.TradeHandler.RemoveOffer(Int32.Parse(offerId), user.Id);
+                            e.Reply(200, deleteOffer);
+                        }
+                        else
+                        {
+                            e.Reply(409, "Deleting trade failed! User not logged in.");
+                        }
+
+                        break;
+                }
+
+                break;
         }
     }
     catch (NpgsqlException ex)
@@ -281,7 +355,6 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
         {
             // Unique Constraint Violation
             e.Reply(409, "Username already exists!");
-            Console.WriteLine("Unique Constraint got violated");
         }
     }
     catch(Exception exp)

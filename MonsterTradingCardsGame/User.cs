@@ -56,15 +56,6 @@ namespace MonsterTradingCardsGame
             db.CloseConnection();
 		}
 
-		public void PrintUser()
-		{
-			Console.WriteLine("Id: " + Id);
-			Console.WriteLine("Username: " + Username);
-			Console.WriteLine("Password: " + Password);
-			Console.WriteLine("Token: " + AuthenticationToken);
-			Console.WriteLine("Coins: " + Coins);
-		}
-
 		public void UpdateUser()
 		{
 			Database db = new Database();
@@ -299,6 +290,35 @@ namespace MonsterTradingCardsGame
 			return c;
 		}
 
-	}
+		public bool IsCardInDeck(int cId)
+		{
+			foreach(Card c in deck)
+			{
+				if (c.Id == cId) return true;
+			}
+			return false;
+		}
+
+        public bool IsCardInStack(int cId)
+        {
+            foreach (Card c in stack)
+            {
+                if (c.Id == cId) return true;
+            }
+            return false;
+        }
+
+		public void RemoveCardFromStack(int cId)
+		{
+			int i = 0;
+			foreach(Card c in stack)
+			{
+				if (c.Id == cId) break;
+				i++;
+			}
+            stack.RemoveAt(i);
+        }
+
+    }
 }
 

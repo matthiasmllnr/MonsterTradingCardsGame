@@ -20,14 +20,6 @@ namespace MonsterTradingCardsGame
 			List<Card>? tmpPackage = JsonConvert.DeserializeObject<List<Card>>(data);
 			if(tmpPackage != null)
 			{
-				Console.WriteLine("------------Cards created for Pckg------------");
-				Console.WriteLine(tmpPackage[0].GetProperties());
-				Console.WriteLine(tmpPackage[1].GetProperties());
-				Console.WriteLine(tmpPackage[2].GetProperties());
-				Console.WriteLine(tmpPackage[3].GetProperties());
-				Console.WriteLine(tmpPackage[4].GetProperties());
-                Console.WriteLine("----------------------------------------------");
-
 				CardPackage cardPackage = new CardPackage(tmpPackage);
 				AllCardPackages.Add(cardPackage.Id, cardPackage);
 

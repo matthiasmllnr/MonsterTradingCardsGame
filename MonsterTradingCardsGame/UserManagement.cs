@@ -91,14 +91,6 @@ namespace MonsterTradingCardsGame
             return token;
         }
 
-        public void PrintUsers()
-        {
-            foreach (User u in users)
-            {
-                u.PrintUser();
-            }
-        }
-
         public bool IsAuthorized(string token, bool adminRequired)
         {
             bool authorized = false;
@@ -122,6 +114,18 @@ namespace MonsterTradingCardsGame
             foreach(User u in users)
             {
                 if (u.AuthenticationToken.Equals(token))
+                {
+                    return u;
+                }
+            }
+            return null;
+        }
+
+        public User? GetUser(int userId)
+        {
+            foreach (User u in users)
+            {
+                if (u.Id.Equals(userId))
                 {
                     return u;
                 }
