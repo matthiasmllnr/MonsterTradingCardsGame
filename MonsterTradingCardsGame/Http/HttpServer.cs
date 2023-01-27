@@ -65,9 +65,7 @@ namespace MonsterTradingCardsGame
                     n = stream.Read(buf, 0, buf.Length);
                     data += Encoding.ASCII.GetString(buf, 0, n);
                 }
-
                 Incoming?.Invoke(this, new HttpServerEventArgs(data, client));
-
             }
         }
 

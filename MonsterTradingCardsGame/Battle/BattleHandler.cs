@@ -36,7 +36,7 @@ namespace MonsterTradingCardsGame
                         User2.Elo -= 5;
                         User1.Wins++;
                         User2.Losses++;
-                        User1.Coins++;
+                        User1.Coins++; // unique feature hihi
                         battleResult += $"----------[ Battle Result ]----------\n\n";
                         battleResult += $"Winner: {User1.Username}\n";
                         battleResult += $"Loser: {User2.Username}\n";
@@ -50,7 +50,7 @@ namespace MonsterTradingCardsGame
                         User1.Elo -= 5;
                         User2.Wins++;
                         User1.Losses++;
-                        User2.Coins++;
+                        User2.Coins++; // unique feature hihi
                         battleResult += $"----------[ Battle Result ]----------\n\n";
                         battleResult += $"Winner: {User2.Username}\n";
                         battleResult += $"Loser: {User1.Username}\n";
@@ -70,6 +70,10 @@ namespace MonsterTradingCardsGame
                 // add battle log
                 User1.LastBattleLog = battleResult;
                 User2.LastBattleLog = battleResult;
+
+                // remove users
+                User1 = null;
+                User2 = null;
             }
 
 			return battleResult;

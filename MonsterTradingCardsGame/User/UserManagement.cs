@@ -10,7 +10,7 @@ namespace MonsterTradingCardsGame
 {
 	public class UserManagement
 	{
-		private List<User> users;
+		public List<User> users;
 
 		public UserManagement()
 		{

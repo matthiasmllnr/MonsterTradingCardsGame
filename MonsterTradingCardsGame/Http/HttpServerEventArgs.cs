@@ -47,9 +47,7 @@ namespace MonsterTradingCardsGame
                 }
                 else
                 {
-                    // lines[i]: {"Username":"kienboec", "Password":"daniel"}
                     Data = lines[i];
-                    //Payload += (lines[i] + "\r\n");
                 }
 
                 Headers = headers.ToArray();
@@ -123,7 +121,7 @@ namespace MonsterTradingCardsGame
             _Client.GetStream().Write(dbuf, 0, dbuf.Length);                    // send a response
 
             _Client.GetStream().Close();                                        // shut down the connection
-            //_Client.Dispose();
+            _Client.Dispose();
         }
 
     }

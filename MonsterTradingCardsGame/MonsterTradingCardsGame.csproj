@@ -10,9 +10,21 @@
   <ItemGroup>
     <None Remove="Npgsql" />
     <None Remove="Newtonsoft.Json" />
+    <None Remove="Cards\" />
+    <None Remove="Http\" />
+    <None Remove="User\" />
+    <None Remove="Trade\" />
+    <None Remove="Battle\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Npgsql" Version="7.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Cards\" />
+    <Folder Include="Http\" />
+    <Folder Include="User\" />
+    <Folder Include="Trade\" />
+    <Folder Include="Battle\" />
   </ItemGroup>
 </Project>

@@ -17,7 +17,12 @@ server.Run();
 
 void _Svr_Incoming(object sender, HttpServerEventArgs e)
 {
+    Thread t = new Thread(x => RunClient(e));
+    t.Start();
+}
 
+void RunClient(HttpServerEventArgs e)
+{
     try
     {
         List<HttpHeader> h;
@@ -80,11 +85,12 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                         if (token != "-")
                         {
                             e.Reply(200, $"User successfully logged in. \nSession-Token: {token}");
-                        } else
+                        }
+                        else
                         {
                             e.Reply(409, "Invalid username or password!");
                         }
-                        
+
                         break;
                 }
 
@@ -107,7 +113,8 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                             {
                                 e.Reply(409, "Package creation failed.");
                             }
-                        } else
+                        }
+                        else
                         {
                             e.Reply(409, "Authentication failed! User not authorized or logged in.");
                         }
@@ -120,7 +127,7 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                 switch (e.Method)
                 {
                     case "POST":
-                        if(user != null)
+                        if (user != null)
                         {
                             string success = server.CardPackageManager.AcquirePackage(user);
                             e.Reply(200, "Acquire package: " + success);
@@ -197,7 +204,7 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                 switch (e.Method)
                 {
                     case "GET":
-                        
+
                         if (user != null)
                         {
                             string stats = user.GetStats();
@@ -247,7 +254,8 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                             {
                                 string battleResult = server.Battle.StartBattle();
                                 e.Reply(200, battleResult);
-                            } else
+                            }
+                            else
                             {
                                 e.Reply(200, " In Queue: Waiting for opponent.");
                             }
@@ -305,13 +313,14 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
                         if (user != null)
                         {
 
-                            if(offerId != "-")
+                            if (offerId != "-")
                             {
                                 // trade
                                 Console.WriteLine(e.Data);
                                 string response = server.TradeHandler.Trade(Int32.Parse(offerId), user, Int32.Parse(e.Data), server.UserManager);
                                 e.Reply(200, response);
-                            } else
+                            }
+                            else
                             {
                                 // create offer
                                 string response = server.TradeHandler.AddOffer(e.Data, user);
@@ -357,10 +366,8 @@ void _Svr_Incoming(object sender, HttpServerEventArgs e)
             e.Reply(409, "Username already exists!");
         }
     }
-    catch(Exception exp)
+    catch (Exception exp)
     {
         e.Reply(409, exp.Message);
     }
-
-
 }

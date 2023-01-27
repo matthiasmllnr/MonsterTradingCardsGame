@@ -41,7 +41,7 @@ namespace MonsterTradingCardsGame
 			LoadDeckFromDB();
         }
 
-		private void GetUserIdFromDB()
+		public void GetUserIdFromDB()
 		{
 			Database db = new Database();
 
@@ -211,7 +211,7 @@ namespace MonsterTradingCardsGame
 			return false;
 		}
 
-		private bool CheckCardsOwned(List<int>? cardIds)
+		public bool CheckCardsOwned(List<int>? cardIds)
 		{
 			if(cardIds != null)
 			{
@@ -233,9 +233,9 @@ namespace MonsterTradingCardsGame
 			userProfile += "Bio:      " + Bio + "\n";
 			userProfile += "Image:    " + Image + "\n";
 			userProfile += "Coins:    " + Coins + "\n";
-			userProfile += "Elo:    " + Elo + "\n";
-			userProfile += "Wins:    " + Wins + "\n";
-			userProfile += "Losses:    " + Losses + "\n";
+			userProfile += "Elo:      " + Elo + "\n";
+			userProfile += "Wins:     " + Wins + "\n";
+			userProfile += "Losses:   " + Losses + "\n";
             userProfile += "------------------------------\n\n";
 
             return userProfile;
@@ -311,12 +311,17 @@ namespace MonsterTradingCardsGame
 		public void RemoveCardFromStack(int cId)
 		{
 			int i = 0;
+			bool found = false;
 			foreach(Card c in stack)
 			{
-				if (c.Id == cId) break;
+				if (c.Id == cId)
+				{
+					found = true;
+					break;
+				}
 				i++;
 			}
-            stack.RemoveAt(i);
+            if(found) stack.RemoveAt(i);
         }
 
     }
