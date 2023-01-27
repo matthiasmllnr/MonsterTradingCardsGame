@@ -7,6 +7,7 @@ Server listens on a specific address and starts each client which connects as a 
 The incoming data gets structured and then invoked as an Event.
 Then a simple switch statement handles the incoming requests and sends a reply to the client.
 The data is persisted in a postgres database, which ensures via referential integrity that a user can only own cards that exists and a package/offer only consists of existing cards and so on with the user deck and stack.
+The whole database gets mirrored as objects, so once this was done, it's pretty easy to write handle incoming requests and keep a persistent database state.
 
 ## Failures & Solutions
 First I did not use JsonConvert to easily access the data given as a string. But later I ran into some problems by splitting them by my own.
