@@ -46,7 +46,8 @@ namespace MonsterTradingCardsGame
 			Database db = new Database();
 
 			NpgsqlCommand cmd = db.conn.CreateCommand();
-			cmd.CommandText = $"SELECT id FROM users WHERE name = '{Username}'";
+			cmd.CommandText = $"SELECT id FROM users WHERE name = @username";
+			cmd.Parameters.AddWithValue("@username", Username);
             NpgsqlDataReader dr = cmd.ExecuteReader();
 			if (dr.Read())
 			{
@@ -61,14 +62,22 @@ namespace MonsterTradingCardsGame
 			Database db = new Database();
 			NpgsqlCommand cmd = db.conn.CreateCommand();
 			cmd.CommandText = $"UPDATE users SET " +
-							  $"name = '{Username}', " +
-							  $"password = '{Password}', " +
-							  $"token = '{AuthenticationToken}', " +
-							  $"coins = '{Coins}', " +
-							  $"elo = '{Elo}', " +
-							  $"wins = '{Wins}', " +
-							  $"losses = '{Losses}' " +
-							  $"WHERE id = '{Id}'";
+							  $"name = @username, " +
+							  $"password = @password, " +
+							  $"token = @token, " +
+							  $"coins = @coins, " +
+							  $"elo = @elo, " +
+							  $"wins = @wins, " +
+							  $"losses = @losses " +
+							  $"WHERE id = @id";
+			cmd.Parameters.AddWithValue("@username", Username);
+			cmd.Parameters.AddWithValue("@password", Password);
+			cmd.Parameters.AddWithValue("@token", AuthenticationToken);
+			cmd.Parameters.AddWithValue("@coins", Coins);
+			cmd.Parameters.AddWithValue("@elo", Elo);
+			cmd.Parameters.AddWithValue("@wins", Wins);
+			cmd.Parameters.AddWithValue("@losses", Losses);
+			cmd.Parameters.AddWithValue("@id", Id);
 			cmd.ExecuteNonQuery();
 			db.CloseConnection();
 		}
@@ -77,7 +86,8 @@ namespace MonsterTradingCardsGame
 		{
             Database db = new Database();
             NpgsqlCommand cmd = db.conn.CreateCommand();
-            cmd.CommandText = $"SELECT * FROM user_cards WHERE user_id = '{Id}'";
+            cmd.CommandText = $"SELECT * FROM user_cards WHERE user_id = @id";
+			cmd.Parameters.AddWithValue("@id", Id);
 
 			NpgsqlDataReader dr = cmd.ExecuteReader();
 			List<int> cardIds = new List<int>();
@@ -89,7 +99,8 @@ namespace MonsterTradingCardsGame
 
 			foreach(int cardId in cardIds)
 			{
-                cmd.CommandText = $"SELECT * FROM cards WHERE id = '{cardId}'";
+                cmd.CommandText = $"SELECT * FROM cards WHERE id = @cardId";
+				cmd.Parameters.AddWithValue("@cardId", cardId);
 				dr = cmd.ExecuteReader();
 				if (dr.Read())
 				{
@@ -136,7 +147,12 @@ namespace MonsterTradingCardsGame
 			// save in db
 			Database db = new Database();
             NpgsqlCommand cmd = db.conn.CreateCommand();
-            cmd.CommandText = $"INSERT INTO user_decks (user_id, card1_id, card2_id, card3_id, card4_id) VALUES ('{Id}', '{deck[0].Id}', '{deck[1].Id}', '{deck[2].Id}', '{deck[3].Id}')";
+            cmd.CommandText = $"INSERT INTO user_decks (user_id, card1_id, card2_id, card3_id, card4_id) VALUES (@id, @card0, @card1, @card2, @card3)";
+			cmd.Parameters.AddWithValue("@id", Id);
+			cmd.Parameters.AddWithValue("@card0", deck[0].Id);
+			cmd.Parameters.AddWithValue("@card1", deck[1].Id);
+			cmd.Parameters.AddWithValue("@card2", deck[2].Id);
+			cmd.Parameters.AddWithValue("@card3", deck[3].Id);
 			cmd.ExecuteNonQuery();
 			cmd.Dispose();
 			db.CloseConnection();
@@ -146,7 +162,8 @@ namespace MonsterTradingCardsGame
 		{
             Database db = new Database();
             NpgsqlCommand cmd = db.conn.CreateCommand();
-            cmd.CommandText = $"SELECT * FROM user_decks WHERE user_id = '{Id}'";
+            cmd.CommandText = $"SELECT * FROM user_decks WHERE user_id = @id";
+			cmd.Parameters.AddWithValue("@id", Id);
 			NpgsqlDataReader dr = cmd.ExecuteReader();
 			if (dr.Read())
 			{
@@ -201,7 +218,12 @@ namespace MonsterTradingCardsGame
 			{
 				Database db = new Database();
 				NpgsqlCommand cmd = db.conn.CreateCommand();
-				cmd.CommandText = $"UPDATE user_decks SET card1_id = '{cardIds[0]}', card2_id = '{cardIds[1]}', card3_id = '{cardIds[2]}', card4_id = '{cardIds[3]}' WHERE user_id = '{Id}'";
+				cmd.CommandText = $"UPDATE user_decks SET card1_id = @card1, card2_id = @card2, card3_id = @card3, card4_id = @card4 WHERE user_id = @id";
+				cmd.Parameters.AddWithValue("@card1", cardIds[0]);
+				cmd.Parameters.AddWithValue("@card2", cardIds[1]);
+				cmd.Parameters.AddWithValue("@card3", cardIds[2]);
+				cmd.Parameters.AddWithValue("@card4", cardIds[3]);
+				cmd.Parameters.AddWithValue("@id", Id);
 				cmd.ExecuteNonQuery();
 				cmd.Dispose();
 				db.CloseConnection();

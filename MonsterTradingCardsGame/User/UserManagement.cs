@@ -31,7 +31,9 @@ namespace MonsterTradingCardsGame
 				Database db = new Database();
 
                 NpgsqlCommand cmd = db.conn.CreateCommand();
-                cmd.CommandText = $"INSERT INTO users (name, password, token) VALUES ('{tmpUser.Username}', '{tmpUser.Password}', '-')";
+                cmd.CommandText = $"INSERT INTO users (name, password, token) VALUES (@username, @password, '-')";
+                cmd.Parameters.AddWithValue("@username", tmpUser.Username);
+                cmd.Parameters.AddWithValue("@password", tmpUser.Password);
 				cmd.ExecuteNonQuery();
                 cmd.Dispose();
 
@@ -47,7 +49,9 @@ namespace MonsterTradingCardsGame
             {
                 Database db = new Database();
                 NpgsqlCommand cmd = db.conn.CreateCommand();
-                cmd.CommandText = $"SELECT * FROM users WHERE name = '{tmpUser.Username}' AND password = '{tmpUser.Password}'";
+                cmd.CommandText = $"SELECT * FROM users WHERE name = @username AND password = @password";
+                cmd.Parameters.AddWithValue("@username", tmpUser.Username);
+                cmd.Parameters.AddWithValue("@password", tmpUser.Password);
 
                 IDataReader dr = cmd.ExecuteReader();
                 bool valid = dr.Read();
@@ -64,7 +68,10 @@ namespace MonsterTradingCardsGame
                         (int)dr[9]      // losses
                     );
                     dr.Close();
-                    cmd.CommandText = $"UPDATE users SET token = '{token}' WHERE name = '{tmpUser.Username}' AND password = '{tmpUser.Password}'";
+                    cmd.CommandText = $"UPDATE users SET token = @token WHERE name = @tmpUsername AND password = @tmpPassword";
+                    cmd.Parameters.AddWithValue("@tmpUsername", tmpUser.Username);
+                    cmd.Parameters.AddWithValue("@tmpPassword", tmpUser.Password);
+                    cmd.Parameters.AddWithValue("@token",token);
                     cmd.ExecuteNonQuery();
                 }
                 cmd.Dispose();

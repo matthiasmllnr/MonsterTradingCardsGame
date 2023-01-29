@@ -109,11 +109,16 @@ namespace MonsterTradingCardsGame
                     // swap cards and delete offer from db
                     Database db = new Database();
 					NpgsqlCommand cmd = db.conn.CreateCommand();
-					cmd.CommandText = $"UPDATE user_cards SET user_id = '{offerUser.Id}' WHERE card_id = '{c.Id}'";
+					cmd.CommandText = $"UPDATE user_cards SET user_id = @offerUserId WHERE card_id = @cardId";
+					cmd.Parameters.AddWithValue("@offerUserId", offerUser.Id);
+					cmd.Parameters.AddWithValue("@cardId", c.Id);
 					cmd.ExecuteNonQuery();
-					cmd.CommandText = $"UPDATE user_cards SET user_id = '{u.Id}' WHERE card_id = '{o.CardId}'";
+					cmd.CommandText = $"UPDATE user_cards SET user_id = @uId WHERE card_id = @oCardId";
+					cmd.Parameters.AddWithValue("@uId", u.Id);
+					cmd.Parameters.AddWithValue("@oCardId", o.CardId);
 					cmd.ExecuteNonQuery();
-					cmd.CommandText = $"DELETE FROM trades WHERE id = '{offerId}'";
+					cmd.CommandText = $"DELETE FROM trades WHERE id = @offerId";
+					cmd.Parameters.AddWithValue("@offerId", offerId);
 					cmd.ExecuteNonQuery();
 					cmd.Dispose();
                     db.CloseConnection();

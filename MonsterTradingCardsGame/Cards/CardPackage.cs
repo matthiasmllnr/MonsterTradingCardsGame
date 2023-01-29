@@ -39,7 +39,12 @@ namespace MonsterTradingCardsGame
 
             NpgsqlCommand cmd = db.conn.CreateCommand();
             cmd = db.conn.CreateCommand();
-            cmd.CommandText = $"INSERT INTO packages (card1_id, card2_id, card3_id, card4_id, card5_id) VALUES ('{Cards[0].Id}', '{Cards[1].Id}', '{Cards[2].Id}', '{Cards[3].Id}', '{Cards[4].Id}') RETURNING id";
+            cmd.CommandText = $"INSERT INTO packages (card1_id, card2_id, card3_id, card4_id, card5_id) VALUES (@card0, @card1, @card2, @card3, @card4) RETURNING id";
+            cmd.Parameters.AddWithValue("@card0", Cards[0].Id);
+            cmd.Parameters.AddWithValue("@card1", Cards[1].Id);
+            cmd.Parameters.AddWithValue("@card2", Cards[2].Id);
+            cmd.Parameters.AddWithValue("@card3", Cards[3].Id);
+            cmd.Parameters.AddWithValue("@card4", Cards[4].Id);
             object? obj = cmd.ExecuteScalar();
             if (obj != null) Id = (int)obj;
             cmd.Dispose();

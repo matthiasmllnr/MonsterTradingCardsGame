@@ -44,8 +44,13 @@ namespace MonsterTradingCardsGame
 			cmd.CommandText = "INSERT INTO trades " +
 							  "(user_id, card_id, card_name, card_type, min_damage) " +
 							  "VALUES " +
-							  $"('{UserId}', '{CardId}', '{CardName}', '{CardType}', '{MinDamage}') " +
+							  $"(@userId, @cardId, @cardName, @cardType, @minDamage) " +
 							  "RETURNING id";
+			cmd.Parameters.AddWithValue("@userId", UserId);
+			cmd.Parameters.AddWithValue("@cardId", CardId);
+			cmd.Parameters.AddWithValue("@cardName", CardName);
+			cmd.Parameters.AddWithValue("@cardType", CardType);
+			cmd.Parameters.AddWithValue("@minDamage", MinDamage);
 			Object? res = cmd.ExecuteScalar();
 			if (res != null) Id = (int)res;
 			cmd.Dispose();
@@ -56,7 +61,8 @@ namespace MonsterTradingCardsGame
 		{
 			Database db = new Database();
 			NpgsqlCommand cmd = db.conn.CreateCommand();
-			cmd.CommandText = $"DELETE FROM trades WHERE id = '{Id}'";
+			cmd.CommandText = $"DELETE FROM trades WHERE id = @id";
+			cmd.Parameters.AddWithValue("@id", Id);
 			cmd.ExecuteNonQuery();
 			cmd.Dispose();
 			db.CloseConnection();
@@ -66,7 +72,8 @@ namespace MonsterTradingCardsGame
 		{
 			Database db = new Database();
 			NpgsqlCommand cmd = db.conn.CreateCommand();
-			cmd.CommandText = $"SELECT * FROM cards WHERE id = '{cId}'";
+			cmd.CommandText = $"SELECT * FROM cards WHERE id = @cId";
+			cmd.Parameters.AddWithValue("@cId", cId);
 			NpgsqlDataReader dr = cmd.ExecuteReader();
 			List<string> l = new List<string>();
 			if (dr.Read())

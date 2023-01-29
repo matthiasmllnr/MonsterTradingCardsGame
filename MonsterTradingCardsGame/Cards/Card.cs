@@ -51,7 +51,11 @@ namespace MonsterTradingCardsGame
 
             NpgsqlCommand cmd = db.conn.CreateCommand();
             cmd = db.conn.CreateCommand();
-            cmd.CommandText = $"INSERT INTO cards (name, type, element, damage) VALUES ('{Name}', '{Type}', '{Element}', '{Damage}') RETURNING id";
+            cmd.CommandText = $"INSERT INTO cards (name, type, element, damage) VALUES (@name, @type, @element, @damage) RETURNING id";
+			cmd.Parameters.AddWithValue("@name", Name);
+			cmd.Parameters.AddWithValue("@type", Type);
+			cmd.Parameters.AddWithValue("@element", Element);
+			cmd.Parameters.AddWithValue("@damage", Damage);
 			object? obj = cmd.ExecuteScalar();
 			if (obj != null) Id = (int)obj;
 			cmd.Dispose();

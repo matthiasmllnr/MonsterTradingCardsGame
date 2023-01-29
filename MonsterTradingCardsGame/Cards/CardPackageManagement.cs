@@ -67,7 +67,9 @@ namespace MonsterTradingCardsGame
 		{
 			Database db = new Database();
             NpgsqlCommand cmd = db.conn.CreateCommand();
-            cmd.CommandText = $"INSERT INTO user_cards (card_id, user_id) VALUES ('{cardId}', '{userId}')";
+            cmd.CommandText = $"INSERT INTO user_cards (card_id, user_id) VALUES (@cardId, @userId)";
+			cmd.Parameters.AddWithValue("@cardId", cardId);
+			cmd.Parameters.AddWithValue("@userId", userId);
 			cmd.ExecuteNonQuery();
 			cmd.Dispose();
             db.CloseConnection();
@@ -77,7 +79,8 @@ namespace MonsterTradingCardsGame
 		{
             Database db = new Database();
             NpgsqlCommand cmd = db.conn.CreateCommand();
-            cmd.CommandText = $"DELETE FROM packages WHERE id = '{packageId}'";
+            cmd.CommandText = $"DELETE FROM packages WHERE id = @packageId";
+			cmd.Parameters.AddWithValue("@packageId", packageId);
             cmd.ExecuteNonQuery();
             cmd.Dispose();
             db.CloseConnection();
@@ -111,7 +114,12 @@ namespace MonsterTradingCardsGame
 
 			foreach(List<int> l in packageIds)
 			{
-                cmdCard.CommandText = $"SELECT * FROM cards WHERE id IN ('{l[1]}', '{l[2]}', '{l[3]}', '{l[4]}', '{l[5]}')";
+                cmdCard.CommandText = $"SELECT * FROM cards WHERE id IN (@l1, @l2, @l3, @l4, @l5)";
+				cmdCard.Parameters.AddWithValue("@l1", l[1]);
+				cmdCard.Parameters.AddWithValue("@l2", l[2]);
+				cmdCard.Parameters.AddWithValue("@l3", l[3]);
+				cmdCard.Parameters.AddWithValue("@l4", l[4]);
+				cmdCard.Parameters.AddWithValue("@l5", l[5]);
                 NpgsqlDataReader drCard = cmdCard.ExecuteReader();
                 List<Card> cardList = new List<Card>();
                 while (drCard.Read())
